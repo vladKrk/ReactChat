@@ -1,0 +1,44 @@
+@import '../vars.scss';
+
+.Room {
+    display: flex;
+    width: 100%;
+    height: 70px;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    &__Photo{
+        margin-top: auto;
+        margin-bottom: auto;
+        border-radius: 50%;
+        width: 41px;
+        min-width: 41px;
+        min-height: 41px;
+        height: 41px;
+        background-image: url('../../Image/F.jpg');
+        background-position: center;
+        background-size: cover;
+    }
+
+    &__Info {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 15px;
+        color: $greyColor;
+        &__Name {
+            font-size: 1em;
+            font-weight: 600;
+        }
+        &__LastMessage {
+            font-size: 0.9em;
+        }
+    }
+    &:hover {
+        background: $dark1MainColor;
+        cursor: pointer;
+    }
+}
+
+

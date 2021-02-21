@@ -1,0 +1,21 @@
+@import '../../components/vars.scss';
+
+.Layout {
+    background-image: url('../../Image/back4.jpg');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__Center {
+        background: white;
+        display: flex;
+        z-index: 5;
+        flex-direction: column;
+        width: 90%;
+        height: 90%;
+        box-shadow: 0 0px 4px 2px rgba(0, 0, 0, .2);
+    }
+}

@@ -1,0 +1,17 @@
+@import '../../../components/vars.scss';
+
+.Texting {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-right: 2px solid $dark1MainColor;
+    &__DialogBlock {
+        height: 85%;
+        border-bottom: 2px solid $dark1MainColor;
+    }
+    &__InputBlock {
+        height: 15%;
+    }
+}

@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Auth from "./containers/Auth/Auth";
+import Chat from "./containers/Chat/Chat";
+import Layout from "./containers/Layout/Layout";
+import { AuthState } from "./context/auth/authState";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthState>
+      <div className="App">
+        <BrowserRouter>
+          <Layout style={{ width: "40%", height: "40%" }}>
+            <Auth />
+          </Layout>
+          {/* <Layout>
+      <Chat/>
+    </Layout> */}
+        </BrowserRouter>
+      </div>
+    </AuthState>
   );
 }
 
