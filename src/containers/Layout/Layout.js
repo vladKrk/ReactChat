@@ -1,7 +1,5 @@
 import classes from './Layout.module.scss'
 import React from 'react'
-// import Header from '../../components/Header/Header'
-// import Chat from '../Chat/Chat'
 
 const Layout = ({children, style}) => {
     return(

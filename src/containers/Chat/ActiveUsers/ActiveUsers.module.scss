@@ -1,0 +1,16 @@
+@import '../../../components/vars.scss';
+
+.ActiveUsers {
+    box-sizing: border-box;
+    color: $dark1MainColor;
+    font-weight: 700;
+    height: 100%;
+    &__Title {
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        color: $dark1MainColor;
+    }
+}

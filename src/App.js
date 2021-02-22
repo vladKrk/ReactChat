@@ -1,23 +1,26 @@
 import "./App.css";
-import Auth from "./containers/Auth/Auth";
-import Chat from "./containers/Chat/Chat";
-import Layout from "./containers/Layout/Layout";
 import { AuthState } from "./context/auth/authState";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter} from "react-router-dom";
+import AppRoute from "./hoc/AppRoute";
+import { ChatState } from "./context/chat/chatState";
+import { useEffect } from "react";
+import api from "./services/serverApi";
 
 function App() {
+
+  useEffect(() => {
+    api.connect("ws://localhost:3001");
+  }, [])
+
   return (
     <AuthState>
+      <ChatState>
       <div className="App">
         <BrowserRouter>
-          <Layout style={{ width: "40%", height: "40%" }}>
-            <Auth />
-          </Layout>
-          {/* <Layout>
-      <Chat/>
-    </Layout> */}
+          <AppRoute/>
         </BrowserRouter>
       </div>
+      </ChatState>
     </AuthState>
   );
 }

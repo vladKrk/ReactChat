@@ -1,36 +1,57 @@
-import React, { useReducer } from 'react'
-import { AUTH_START, AUTH_SUCCESS } from '../types'
-import { AuthContext } from './authContext'
-import { authReducer } from './authReducer'
+import React, { useReducer } from "react";
+import api from "../../services/serverApi";
+import { AUTH_ERROR, AUTH_LOGOUT, AUTH_START, AUTH_SUCCESS } from "../types";
+import { AuthContext } from "./authContext";
+import { authReducer } from "./authReducer";
 
-export const AuthState = ({children}) => {
-    const [state, dispatch] = useReducer(authReducer, {
-        name: '',
-        loading: false,
-        error: null,
-        success: false
-    })
+export const AuthState = ({ children }) => {
+  const localName = localStorage.getItem("name");
 
-    const auth = async (name) => {
-        dispatch({
-            type: AUTH_START
-        });
-        
-        //Обращение к серверу
+  const [state, dispatch] = useReducer(authReducer, {
+    name: "" || localName,
+    loading: false,
+    error: null,
+    success: false,
+    isAuth: !!localName,
+  });
 
-        dispatch({
-            type: AUTH_SUCCESS,
-            payload: {name}
-        })
+  const auth = async (name) => {
+    dispatch({
+      type: AUTH_START,
+    });
 
+    const res = await api.signUp({ name });
+    const data = res.data;
+    if (res.status === "error") {
+      dispatch({
+        type: AUTH_ERROR,
+        payload: { error: data.error },
+      });
+    } else {
+      localStorage.setItem("name", name);
+      dispatch({
+        type: AUTH_SUCCESS,
+        payload: { name },
+      });
     }
+  };
 
-    return (
-        <AuthContext.Provider value = {{
-            state,
-            auth
-        }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  const logout = () => {
+    localStorage.removeItem("name");
+    dispatch({
+      type: AUTH_LOGOUT,
+    });
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        authState: state,
+        auth,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};

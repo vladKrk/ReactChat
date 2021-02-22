@@ -27,12 +27,36 @@
         justify-content: center;
         margin-left: 15px;
         color: $greyColor;
+        &__EnterName {
+            display: flex;
+            input{
+                border: none;
+            }
+            button {
+                width: 40px;
+                height: 40px;
+                margin:0;
+                padding: 0;
+                margin-top: 10px;
+            }
+            i {
+                font-size: 40px;
+                width: 40px;
+                height: 40px;
+                margin-top: 10px;
+                background: transparent;
+                &:hover {
+                    background: $dark1MainColor;
+                    color: black;
+                }
+            }
+        }
         &__Name {
-            font-size: 1em;
+            font-size: 16px;
             font-weight: 600;
         }
         &__LastMessage {
-            font-size: 0.9em;
+            font-size: 14px;
         }
     }
     &:hover {
@@ -41,4 +65,7 @@
     }
 }
 
+.active {
+    background: $dark2MainColor;
+}
 

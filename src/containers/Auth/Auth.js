@@ -1,15 +1,14 @@
 import classes from './Auth.module.scss'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../components/Header/Header';
 import Input from '../../components/UI/Input/Input';
 import {AuthContext} from '../../context/auth/authContext';
 
-
 const Auth = () => {
-    
-    const auth = useContext(AuthContext)
-    const [name, setName] = useState('')
 
+    const auth = useContext(AuthContext)
+
+    const [name, setName] = useState('')
     return(
         <div className = {classes.Auth}>
            <Header title = 'Вход'/>

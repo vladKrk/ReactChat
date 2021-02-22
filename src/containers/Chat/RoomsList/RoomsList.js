@@ -2,15 +2,12 @@ import classes from './RoomsList.module.scss'
 import React from 'react'
 import Room from '../../../components/Room/Room'
 
-const RoomsList = () => {
+const RoomsList = ({rooms, activeRoom}) => {
+
     return <div className = {classes.RoomsList}>
-        <Room/>
-        <Room/>
-        <Room/>
-        <Room/>
-        <Room/>
-        <Room/>
-        <Room/>
+        {rooms.map((room, index) => {
+            return <Room key = {index} name = {room.name} isActive = {room.name === activeRoom}/>
+        })}
     </div>
 }
 

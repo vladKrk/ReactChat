@@ -7,7 +7,7 @@ const Texting = () => {
 
         </div>
         <div className = {classes.Texting__InputBlock}>
-
+            
         </div>
     </div>
 }
