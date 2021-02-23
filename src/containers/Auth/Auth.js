@@ -1,5 +1,5 @@
 import classes from './Auth.module.scss'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Header from '../../components/Header/Header';
 import Input from '../../components/UI/Input/Input';
 import {AuthContext} from '../../context/auth/authContext';
@@ -11,14 +11,14 @@ const Auth = () => {
     const [name, setName] = useState('')
     return(
         <div className = {classes.Auth}>
-           <Header title = 'Вход'/>
+           <Header title = 'Sign in'/>
             <form className = {classes.Auth__InputName}>
-                <label>Введите уникальное имя, чтобы продолжить</label>
-                <Input type = 'text' placeholder = 'Имя' name = 'name' value = {name} onChange = {setName}/>
+                <label>Enter a unique name to continue...</label>
+                <Input type = 'text' placeholder = 'Name' name = 'name' value = {name} onChange = {setName}/>
                 <button onClick = {(e) => {
                     e.preventDefault();
                     auth.auth(name)
-                }}>Продолжить</button>
+                }}>Continue</button>
            </form>
         </div>
     )

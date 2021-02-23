@@ -67,5 +67,8 @@
 
 .active {
     background: $dark2MainColor;
+    &:hover {
+        background: $dark2MainColor;
+    }
 }
 

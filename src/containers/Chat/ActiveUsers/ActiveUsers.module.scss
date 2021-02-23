@@ -13,4 +13,14 @@
         font-size: 20px;
         color: $dark1MainColor;
     }
+    &__UsersList {
+        width: 100%;
+        ul {
+            font-size: 16px;
+            li {
+                margin-top: 5px;
+            }
+        }
+        
+    }
 }

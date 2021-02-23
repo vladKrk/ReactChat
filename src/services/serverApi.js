@@ -21,7 +21,6 @@ class serverApi {
           name: data.name,
         },
         (res) => {
-          console.log("signUp: ", res);
           return resolve(JSON.parse(res));
         }
       );
@@ -40,7 +39,6 @@ class serverApi {
           name: data.name,
         },
         (res) => {
-          console.log("fetchRooms: ", res);
           return resolve(JSON.parse(res));
         }
       );
@@ -56,12 +54,29 @@ class serverApi {
             roomName: data.roomName,
           },
           (res) => {
-            console.log("fetchRoom: ", res);
             return resolve(JSON.parse(res));
           }
         );
       });
   }
+
+  sendMessage = (data) => {
+    return new Promise((resolve, reject) => {
+        this.socket.emit(
+          "sendMessage",
+          {
+            text: data.text,
+            sender: data.sender,
+            roomName: data.roomName,
+          },
+          (res) => {
+            console.log("sendMessage: ", res);
+            return resolve(JSON.parse(res));
+          }
+        );
+      });
+  }
+
 }
 
 const api = new serverApi();

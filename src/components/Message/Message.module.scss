@@ -1,0 +1,28 @@
+@import '../vars.scss';
+
+.Message {
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    padding: 5px;
+    &__NameAndDate {
+        display: flex;
+        align-items: center;
+        &__Name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        &__Date {
+            margin-left: 5px;
+            font-size: 12px;
+            color: $dark2GreyColor;
+        }
+    }
+    &__Text {
+        margin-top: 5px;
+        font-size: 14px;
+    }
+}
+
+.owner {
+    color: $dark1MainColor;
+}

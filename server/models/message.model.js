@@ -1,8 +1,8 @@
 module.exports = class Message {
 
-    constructor(text, sendTime, sender) {
+    constructor(text, date, sender) {
         this.text = text;
-        this.sendTime = sendTime;
+        this.date = date;
         this.sender = sender;
     }
 

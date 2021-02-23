@@ -9,7 +9,7 @@ import api from "./services/serverApi";
 function App() {
 
   useEffect(() => {
-    api.connect("ws://localhost:3001");
+    
   }, [])
 
   return (

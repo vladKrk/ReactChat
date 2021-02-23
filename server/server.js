@@ -9,7 +9,8 @@ const ERROR = (mes = "") => {
 };
 
 // ДИАЛОГИ
-const Room = require('./models/room.model');
+const Room = require("./models/room.model");
+const Message = require('./models/message.model');
 
 const express = require("express"),
   app = express(),
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 3001;
 const io = require("socket.io")(server, {
   path: "/",
   serveClient: false,
-  cors: {origin: "*"},
+  cors: { origin: "*" },
   pingInterval: 10000,
   pingTimeout: 5000,
   cookie: false,
@@ -30,7 +31,7 @@ server.listen(PORT, () => {
   console.log("Listening on port: ", PORT);
 });
 
-const rooms = []
+const rooms = [];
 const users = [];
 
 io.on("connection", (client) => {
@@ -42,57 +43,61 @@ io.on("connection", (client) => {
   client.on("registration", (data, callBack) => {
     const name = data.name;
     if (users.includes(name)) {
-      client.join(name);
-      callBack(SUCCESS('User entered'));
+      callBack(SUCCESS("User entered"));
     } else {
       users.push(name);
-      rooms.push(new Room(name, [name], []))
-      console.log(rooms, users);
-      client.join(name);
-      callBack(SUCCESS('User created'));
+      rooms.push(new Room(name, [name], []));
+      callBack(SUCCESS("User created"));
     }
   });
-  client.on('logout', (data, callBack) => {
-      const name = data.name;
-      for(let room of rooms){
-          if(room.hasUser(name)) {
-            room.deleteUser(name)
-          }
-      }
-      client.leaveAll();
-      callBack(SUCCESS("Sign out succesfully"));
-  })
 
-  client.on('fetchRooms', (data, callBack) => {
-      const name = data.name
-      let currentRooms = [];
-      for(let room of rooms) {
-          if(room.hasUser(name)) {
-            currentRooms.push(room);
-          }
+  client.on("fetchRooms", (data, callBack) => {
+    const name = data.name;
+    let currentRooms = [];
+    for (let room of rooms) {
+      if (room.hasUser(name)) {
+        currentRooms.push(room);
       }
-      console.log(currentRooms);
-      callBack(SUCCESS(currentRooms));
-  })
+    }
+    callBack(SUCCESS(currentRooms));
+  });
 
-  client.on('fetchRoom', (data, callBack) => {
+  client.on("fetchRoom", (data, callBack) => {
     const name = data.name,
-    roomName = data.roomName;
+      roomName = data.roomName;
     let isRoom = false;
-    for(let room of rooms) {
-        if(room.name === roomName) {
-            isRoom = true;
-            if(!room.users.includes(name)) {
-                room.users.push(name)
-                callBack(SUCCESS(room));
-                break;
-            }
+    for (let room of rooms) {
+      if (room.name === roomName) {
+        isRoom = true;
+        client.leaveAll();
+        client.join(room.name) 
+        if (!room.users.includes(name)) {
+          room.users.push(name);
+          client.broadcast.to(roomName).emit("membersSubscribe", {name, roomName});
+          callBack(SUCCESS(room));
+        } else {
+          callBack(ERROR("This user has such room"));
         }
+      }
     }
-    if(!isRoom) {
-        callBack(ERROR('No such room'));
+    if (!isRoom) {
+      callBack(ERROR("No such room"));
     }
-    console.log(rooms);
-  })
+  });
 
+  client.on("sendMessage", (data, callBack) => {
+    const sender = data.sender,
+      roomName = data.roomName,
+      text = data.text;
+    const date = new Date(Date.now()).toTimeString().slice(0, 5);
+    const newMessage = new Message(text, date, sender);
+    for (let room of rooms) {
+      if (room.name === roomName) {
+        room.messages.push(newMessage);
+        break;
+      }
+    }
+    client.broadcast.to(roomName).emit("message", newMessage);
+    callBack(SUCCESS("Message was sent"));
+  });
 });

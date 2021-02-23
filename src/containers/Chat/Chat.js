@@ -6,7 +6,6 @@ import Texting from "./Texting/Texting";
 import { AuthContext } from "../../context/auth/authContext";
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
 import { ChatContext } from "../../context/chat/chatContext";
-import api from "../../services/serverApi";
 import { useHistory } from "react-router-dom";
 
 const Chat = () => {
@@ -17,55 +16,54 @@ const Chat = () => {
   const idFromPath = document.location.pathname.slice(6);
 
   useEffect(() => {
-    api.connect("ws://localhost:3001");
-    (async () => {
-      await chat.startChat(auth.authState.name, history);
-      if (idFromPath === "") {
-        await chat.selectRoom(auth.authState.name, auth.authState.name, history);
-      } else {
-        let isNew = true;
-        for (let room of chat.chatState.rooms) {
-          if (room.name === idFromPath) {
-            isNew = false;
-            break;//
-          }
-        }
-        console.log("2", isNew);
-        await chat.selectRoom(auth.authState.name, idFromPath, history, isNew);
-      }
-    })();
+    chat.startChat(auth.authState.name, history);
+  }, []);
+
+  useEffect(() => {
+    if (idFromPath === "") {
+      chat.selectRoom(auth.authState.name, auth.authState.name, history);
+    } else {
+      chat.selectRoom(auth.authState.name, idFromPath, history);
+    }
   }, []);
 
   return (
     <div className={classes.Chat}>
       <div className={classes.Chat__Left}>
         <div className={classes.Chat__Left__Head}>
-          <button className={classes.Chat__Left__Head__AddRoom}>
-            <i className="fa fa-plus" aria-hidden="true"></i>
-          </button>
-          <p>{auth.authState.name}</p>
-          <button
-            className={classes.Chat__Left__Head__Exit}
-            onClick={auth.logout}
-          >
-            <i className="fa fa-sign-out" aria-hidden="true"></i>
-          </button>
+          <p>Rooms</p>
+          <div className={classes.Chat__Left__Head__ExitBlock}>
+            <p>{auth.authState.name}</p>
+            <button
+              className={classes.Chat__Left__Head__ExitBlock__Exit}
+              onClick={auth.logout}
+            >
+              <i className="fa fa-sign-out" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
         <div className={classes.Chat__Left__Content}>
-          <RoomsList
-            rooms={chat.chatState.rooms}
-            activeRoom={chat.chatState.activeRoom}
-          />
+          {chat.chatState.selectSuccess && (
+            <RoomsList
+              rooms={chat.chatState.rooms}
+              activeRoom={chat.chatState.activeRoom.name}
+              selectRoom={chat.selectRoom}
+              name={auth.authState.name}
+              history={history}
+            />
+          )}
         </div>
       </div>
       <div className={classes.Chat__Right}>
         <Header title="Chat" />
         <div className={classes.Chat__Right__TextingAndOnline}>
           <div className={classes.Chat__Right__TextingAndOnline__MiddlePanel}>
-            <Texting />
+            <Texting chat={chat} name={auth.authState.name} />
           </div>
           <div className={classes.Chat__Right__TextingAndOnline__RightPanel}>
-            <ActiveUsers />
+            {chat.chatState.selectSuccess && (
+            <ActiveUsers users = {chat.chatState.activeRoom.users} name = {auth.authState.name}/>
+            )}
           </div>
         </div>
       </div>
