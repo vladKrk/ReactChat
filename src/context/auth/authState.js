@@ -36,8 +36,9 @@ export const AuthState = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = (name) => {
     localStorage.removeItem("name");
+    api.logout({name})
     dispatch({
       type: AUTH_LOGOUT,
     });

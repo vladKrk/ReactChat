@@ -1,8 +1,7 @@
 import classes from "./ActiveUsers.module.scss";
-import React, { useContext } from "react";
-import { AuthContext } from "../../../context/auth/authContext";
+import React from "react";
 
-const ActiveUsers = ({users, name}) => {
+const ActiveUsers = ({users, name, activeUsers}) => {
   return (
     <div className={classes.ActiveUsers}>
       <div className={classes.ActiveUsers__Title}>Members</div>
@@ -10,7 +9,7 @@ const ActiveUsers = ({users, name}) => {
           <ul>
             {users.map((user, index) => {
                 return <li key = {index}>
-                  {user === name ? user + ' ( You )' : user}
+                  {user === name ? user + ' ( You )' : (activeUsers.includes(user) ? user + ' [ONLINE]' : user)}
                 </li>
             })}
           </ul>

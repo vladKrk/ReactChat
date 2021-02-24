@@ -9,10 +9,6 @@ class serverApi {
     this.socket = io(url);
   };
 
-  // Params:
-  //  data = {name}
-  // return:
-  //  {status: 'success', message: 'User created'/'User entered'}
   signUp = (data) => {
     return new Promise((resolve, reject) => {
       this.socket.emit(
@@ -27,10 +23,6 @@ class serverApi {
     });
   };
 
-  // Params:
-  //  data = {name}
-  // return:
-  //  {status: 'success', message: rooms}  //Only your rooms//
   fetchRooms = (data) => {
     return new Promise((resolve, reject) => {
       this.socket.emit(
@@ -45,38 +37,55 @@ class serverApi {
     });
   };
 
+  checkingUser = (data) => {
+    this.socket.emit("checkingUser", { name: data.name });
+  };
+
+  logout = (data) => {
+    this.socket.emit("logout", {name: data.name});
+  }
+
   fetchRoom = (data) => {
     return new Promise((resolve, reject) => {
-        this.socket.emit(
-          "fetchRoom",
-          {
-            name: data.name,
-            roomName: data.roomName,
-          },
-          (res) => {
-            return resolve(JSON.parse(res));
-          }
-        );
-      });
+      this.socket.emit(
+        "fetchRoom",
+        {
+          name: data.name,
+          roomName: data.roomName,
+        },
+        (res) => {
+          return resolve(JSON.parse(res));
+        }
+      );
+    });
+  };
+
+  fetchActiveUsers = () => {
+    return new Promise((resolve, reject) => {
+      this.socket.emit(
+        "fetchActiveUsers",
+        (res) => {
+          return resolve(JSON.parse(res));
+        }
+      );
+    });
   }
 
   sendMessage = (data) => {
     return new Promise((resolve, reject) => {
-        this.socket.emit(
-          "sendMessage",
-          {
-            text: data.text,
-            sender: data.sender,
-            roomName: data.roomName,
-          },
-          (res) => {
-            console.log("sendMessage: ", res);
-            return resolve(JSON.parse(res));
-          }
-        );
-      });
-  }
-
+      this.socket.emit(
+        "sendMessage",
+        {
+          text: data.text,
+          sender: data.sender,
+          roomName: data.roomName,
+        },
+        (res) => {
+          return resolve(JSON.parse(res));
+        }
+      );
+    });
+  };
 }
 
 const api = new serverApi();

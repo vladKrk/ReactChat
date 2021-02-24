@@ -4,6 +4,7 @@ import {
   ADD_MESSAGE,
   ADD_ROOM,
   ADD_USER,
+  CHANGE_ACTIVE_USERS,
   CHANGE_ROOMS,
   ROOM_ERROR,
   ROOM_START,
@@ -18,12 +19,12 @@ export const ChatState = ({ children }) => {
   const [state, dispatch] = useReducer(chatReducer, {
     rooms: [],
     activeRoom: null,
+    activeUsers: [],
 
     roomError: null,
     roomSuccess: false,
 
     selectSuccess: false,
-
   });
 
   const startChat = async (name, history) => {
@@ -31,14 +32,15 @@ export const ChatState = ({ children }) => {
       type: ROOM_START,
     });
     const res = await api.fetchRooms({ name });
+    fetchActiveUsers();
     if (res.status === "success") {
       dispatch({
         type: CHANGE_ROOMS,
         payload: { rooms: res.data },
       });
       dispatch({
-          type: ROOM_SUCCESS
-      })
+        type: ROOM_SUCCESS,
+      });
     } else {
       dispatch({
         type: ROOM_ERROR,
@@ -55,16 +57,21 @@ export const ChatState = ({ children }) => {
     api.socket.on("message", (mes) => {
       dispatch({
         type: ADD_MESSAGE,
-        payload: {text: mes.text, sender: mes.sender, date: mes.date, roomName: roomName},
+        payload: {
+          text: mes.text,
+          sender: mes.sender,
+          date: mes.date,
+          roomName: roomName,
+        },
       });
-    })
+    });
     api.socket.removeAllListeners("membersSubscribe");
     api.socket.on("membersSubscribe", (member) => {
       dispatch({
         type: ADD_USER,
-        payload: {name: member.name, roomName: member.roomName},
+        payload: { name: member.name, roomName: member.roomName },
       });
-    })
+    });
     //-----------------------------------------
 
     if (res.status === "success") {
@@ -93,16 +100,37 @@ export const ChatState = ({ children }) => {
       }
     }
     dispatch({
-        type: SELECT_SUCCESS
-    })
+      type: SELECT_SUCCESS,
+    });
   };
 
   const sendMessage = async (text, sender, roomName) => {
-    const res = await api.sendMessage({ text, sender, roomName});
+    const res = await api.sendMessage({ text, sender, roomName });
     if (res.status === "success") {
       dispatch({
         type: ADD_MESSAGE,
-        payload: {text, sender, date: new Date(Date.now()).toTimeString().slice(0, 5), roomName: roomName},
+        payload: {
+          text,
+          sender,
+          date: new Date(Date.now()).toTimeString().slice(0, 5),
+          roomName: roomName,
+        },
+      });
+    }
+  };
+
+  const fetchActiveUsers = async () => {
+    const res = await api.fetchActiveUsers();
+    if (res.status === "success") {
+      api.socket.on("activeUsersSubscribe", (data) => {
+        dispatch({
+          type: CHANGE_ACTIVE_USERS,
+          payload: { activeUsers: data.activeUsers },
+        });
+      });
+      dispatch({
+        type: CHANGE_ACTIVE_USERS,
+        payload: { activeUsers: res.data },
       });
     }
   };
@@ -114,6 +142,7 @@ export const ChatState = ({ children }) => {
         startChat,
         selectRoom,
         sendMessage,
+        fetchActiveUsers,
       }}
     >
       {children}

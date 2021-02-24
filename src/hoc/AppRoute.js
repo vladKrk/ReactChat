@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import Auth from '../containers/Auth/Auth'
+import Broadcast from '../containers/Broadcast/Broadcast'
 import Chat from '../containers/Chat/Chat'
 import Layout from '../containers/Layout/Layout'
 import { AuthContext } from '../context/auth/authContext'
@@ -25,6 +26,10 @@ const AppRoute = () => {
         )
     }
 
+    const WrapperBroadcast = () => {
+        return(<Layout><Broadcast/></Layout>)
+    }
+
     if(!authState.isAuth) {
         return (
             <Switch>
@@ -38,6 +43,7 @@ const AppRoute = () => {
             <Switch>
                 <Route path = '/chat' component = {WrapperChat} />
                 <Route path = '/chat/:id' component = {WrapperChat}/>
+                <Route path = '/broadcast/:id' component = {WrapperBroadcast} />
                 <Redirect to = '/chat' exact/>
             </Switch>
         )

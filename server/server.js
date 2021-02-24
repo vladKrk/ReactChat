@@ -7,37 +7,37 @@ const SUCCESS = (mes = "") => {
 const ERROR = (mes = "") => {
   return JSON.stringify({ status: "error", data: mes });
 };
+//
 
-// ДИАЛОГИ
 const Room = require("./models/room.model");
-const Message = require('./models/message.model');
+const Message = require("./models/message.model");
 
-const express = require("express"),
-  app = express(),
-  server = require("http").createServer(app);
+const { server, io, port } = require("./configs/server.config");
 
-const PORT = process.env.PORT || 3001;
-
-const io = require("socket.io")(server, {
-  path: "/",
-  serveClient: false,
-  cors: { origin: "*" },
-  pingInterval: 10000,
-  pingTimeout: 5000,
-  cookie: false,
-});
-
-server.listen(PORT, () => {
-  console.log("Listening on port: ", PORT);
+server.listen(port, () => {
+  console.log("Listening on port: ", port);
 });
 
 const rooms = [];
 const users = [];
+const connectedUsers = [];
 
 io.on("connection", (client) => {
   console.log("Client connected, id: ", client.id);
+
+  const otherUsers = connectedUsers.filter(user => user.id !== client.id);
+  client.emit('other-users', otherUsers.map(user => user.name));
+
   client.on("disconnect", () => {
     console.log("Client disconnected, id: ", client.id);
+    connectedUsers.forEach((user, index) => {
+      if (user.id === client.id) {
+        connectedUsers.splice(index, 1);
+      }
+    });
+    io.emit("activeUsersSubscribe", {
+      activeUsers: connectedUsers.map((user) => user.name),
+    });
   });
 
   client.on("registration", (data, callBack) => {
@@ -51,6 +51,27 @@ io.on("connection", (client) => {
     }
   });
 
+  client.on("logout", (data) => {
+    const name = data.name;
+    connectedUsers.forEach((user, index) => {
+      if (user.name === name) {
+        connectedUsers.splice(index, 1);
+      }
+    });
+    io.emit("activeUsersSubscribe", {
+      activeUsers: connectedUsers.map((user) => user.name),
+    });
+  });
+
+  //Проверяем есть ли пользователь онлайн
+  client.on("checkingUser", (data) => {
+    connectedUsers.push({ name: data.name, id: client.id });
+    io.emit("activeUsersSubscribe", {
+      activeUsers: connectedUsers.map((user) => user.name),
+    });
+  });
+
+  //Приносим комнаты только конкретного пользователя
   client.on("fetchRooms", (data, callBack) => {
     const name = data.name;
     let currentRooms = [];
@@ -70,10 +91,12 @@ io.on("connection", (client) => {
       if (room.name === roomName) {
         isRoom = true;
         client.leaveAll();
-        client.join(room.name) 
+        client.join(room.name);
         if (!room.users.includes(name)) {
           room.users.push(name);
-          client.broadcast.to(roomName).emit("membersSubscribe", {name, roomName});
+          client.broadcast
+            .to(roomName)
+            .emit("membersSubscribe", { name, roomName });
           callBack(SUCCESS(room));
         } else {
           callBack(ERROR("This user has such room"));
@@ -83,6 +106,10 @@ io.on("connection", (client) => {
     if (!isRoom) {
       callBack(ERROR("No such room"));
     }
+  });
+
+  client.on("fetchActiveUsers", (callBack) => {
+    callBack(SUCCESS(connectedUsers.map((user) => user.name)));
   });
 
   client.on("sendMessage", (data, callBack) => {
@@ -100,4 +127,20 @@ io.on("connection", (client) => {
     client.broadcast.to(roomName).emit("message", newMessage);
     callBack(SUCCESS("Message was sent"));
   });
+
+  client.on('offer', (socketName, description) => {
+    const socketId = (connectedUsers.find((user) => user.name === socketName)).id;
+    client.to(socketId).emit('offer', client.id, description);
+  });
+
+  client.on('answer', (socketName, description) => {
+    const socketId = connectedUsers.find((user) => user.name === socketName).id;
+    client.to(socketId).emit('answer', description);
+  });
+
+  client.on('candidate', (socketName, signal) => {
+    const socketId = connectedUsers.find((user) => user.name === socketName).id;
+    client.to(socketId).emit('candidate', signal);
+  });
+
 });

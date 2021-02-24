@@ -15,3 +15,4 @@ export const SELECT_ROOM = 'SELECT_ROOM'
 
 export const ADD_MESSAGE = 'ADD_MESSAGE'
 export const ADD_USER = 'ADD_USER'
+export const CHANGE_ACTIVE_USERS = 'CHANGE_ACTIVE_USERS'

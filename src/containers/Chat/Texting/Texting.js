@@ -4,7 +4,7 @@ import Message from "../../../components/Message/Message";
 import Input from "../../../components/UI/Input/Input";
 import { ChatContext } from "../../../context/chat/chatContext";
 
-const Texting = ({ chat, name }) => {
+const Texting = ({ chat, name, history }) => {
   const [message, setMessage] = useState("");
 
   const dialogRef = useRef(null)
@@ -30,8 +30,14 @@ const Texting = ({ chat, name }) => {
           })) : (chat.chatState.activeRoom ? <div className = {classes.Texting__DialogBlock__FirstMessage}>Send first message</div> : null)}
       </div>
       <div className={classes.Texting__InputBlock}>
-        <div className={classes.Texting__InputBlock__Broadcast}>
-        <i class="fa fa-phone" aria-hidden="true"></i>
+        <div className={classes.Texting__InputBlock__Broadcast} onClick = {
+          () => {
+          // if(chat.chatState.selectSuccess) {
+            history.push('/broadcast/' + chat.chatState.activeRoom.name)
+          // }
+          }
+        }>
+        <i className="fa fa-phone" aria-hidden="true"></i>
         </div>
         <form
           className={classes.Texting__InputBlock__Form}

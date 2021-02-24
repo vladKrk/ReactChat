@@ -8,7 +8,7 @@
   box-sizing: border-box;
   border-right: 2px solid $dark1MainColor;
   &__DialogBlock {
-    height: 85%;
+    flex: 1;
     border-bottom: 2px solid $dark1MainColor;
     padding: 10px;
     overflow-y: auto;

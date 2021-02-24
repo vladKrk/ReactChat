@@ -7,6 +7,7 @@ import { AuthContext } from "../../context/auth/authContext";
 import ActiveUsers from "./ActiveUsers/ActiveUsers";
 import { ChatContext } from "../../context/chat/chatContext";
 import { useHistory } from "react-router-dom";
+import api from "../../services/serverApi";
 
 const Chat = () => {
   const auth = useContext(AuthContext);
@@ -17,6 +18,7 @@ const Chat = () => {
 
   useEffect(() => {
     chat.startChat(auth.authState.name, history);
+    api.checkingUser({name: auth.authState.name});
   }, []);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const Chat = () => {
             <p>{auth.authState.name}</p>
             <button
               className={classes.Chat__Left__Head__ExitBlock__Exit}
-              onClick={auth.logout}
+              onClick={() => {auth.logout(auth.authState.name)}}
             >
               <i className="fa fa-sign-out" aria-hidden="true"></i>
             </button>
@@ -58,11 +60,11 @@ const Chat = () => {
         <Header title="Chat" />
         <div className={classes.Chat__Right__TextingAndOnline}>
           <div className={classes.Chat__Right__TextingAndOnline__MiddlePanel}>
-            <Texting chat={chat} name={auth.authState.name} />
+            <Texting chat={chat} name={auth.authState.name} history = {history}/>
           </div>
           <div className={classes.Chat__Right__TextingAndOnline__RightPanel}>
             {chat.chatState.selectSuccess && (
-            <ActiveUsers users = {chat.chatState.activeRoom.users} name = {auth.authState.name}/>
+            <ActiveUsers users = {chat.chatState.activeRoom.users} name = {auth.authState.name} activeUsers = {chat.chatState.activeUsers}/>
             )}
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
   ADD_MESSAGE,
   SELECT_SUCCESS,
   ADD_USER,
+  CHANGE_ACTIVE_USERS,
 } from "../types";
 
 const handlers = {
@@ -88,7 +89,7 @@ const handlers = {
       activeRoom: newRooms[ind]
     }
   },
-
+  [CHANGE_ACTIVE_USERS]: (state, {payload}) => ({...state, activeUsers: [...payload.activeUsers]}),
   DEFAULT: (state) => state,
 };
 
